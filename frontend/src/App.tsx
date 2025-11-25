@@ -57,13 +57,6 @@ const formatDate = (isoDate: string) => {
 };
 const inputStyle: React.CSSProperties = { padding: '8px', border: '1px solid #ccc', borderRadius: '4px', width: '100%', boxSizing: 'border-box' };
 
-// Estilos base de componentes
-const pill: React.CSSProperties = {
-    display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 999,
-    background: "#f0f0f0", border: "1px solid #ccc", color: "#333", fontSize: 12, whiteSpace: "nowrap",
-};
-const labelCss: React.CSSProperties = { color: '#7c3aed', fontSize: 12, marginBottom: 4, fontWeight: 'bold' };
-
 const CustomStyles = () => (
     <style>{`
         body { background-color: #f0f0f0; }
@@ -110,7 +103,14 @@ const CustomStyles = () => (
 // COMPONENTE MODAL DE DETALLES DEL PARTIDO (FULL PREDICTION)
 // ====================================================================
 
-function MatchDetailModal({ match, onClose, detailData, loading }) {
+type MatchDetailModalProps = {
+    match: FutureMatch | null;
+    onClose: () => void;
+    detailData: PredictResponse | null;
+    loading: boolean;
+};
+
+function MatchDetailModal({ match, onClose, detailData, loading }: MatchDetailModalProps) {
     if (!match) return null;
 
     const data: PredictResponse | null = detailData;
@@ -223,7 +223,7 @@ export default function App() {
         // Cargar todas las ligas disponibles
         fetchJSON<ApiLeagues>(`${API_BASE}/leagues`)
             .then(d => setLeagues(d.leagues ?? []))
-            .catch(e => setError("Error al cargar ligas: Backend no responde."));
+            .catch(err => setError(`Error al cargar ligas: ${err instanceof Error ? err.message : 'Backend no responde.'}`));
             
         // Cargar partidos futuros (con filtro)
         const leagueFilter = selectedLeague ? `&league=${encodeURIComponent(selectedLeague)}` : '';
